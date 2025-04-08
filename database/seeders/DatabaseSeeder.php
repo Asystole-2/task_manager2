@@ -11,13 +11,15 @@ class DatabaseSeeder extends Seeder
     /**
      * Seed the application's database.
      */
-    public function run(): void
+    public function run()
     {
-        // User::factory(10)->create();
+        $roles = ['admin', 'manager', 'member'];
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        foreach ($roles as $role) {
+            Role::create(['name' => $role]);
+        }
+
+        // Assign admin role to first user
+        User::first()->assignRole('admin');
     }
 }
