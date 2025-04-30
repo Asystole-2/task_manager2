@@ -2,6 +2,8 @@ import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
 
+process.env.NODE_OPTIONS = '--openssl-legacy-provider';
+
 export default defineConfig({
     plugins: [
         laravel({
