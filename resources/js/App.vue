@@ -1,13 +1,17 @@
 <template>
     <div class="app-container">
         <nav>
-            <router-link to="/">Home</router-link>
-            <router-link to="/boards">Boards</router-link>
+            <Link href="/">Home</Link>
+            <Link href="/boards">Boards</Link>
         </nav>
 
-        <router-view />
+        <slot />
     </div>
 </template>
+
+<script setup>
+import { Link } from '@inertiajs/vue3';
+</script>
 
 <style>
 .app-container {
