@@ -1,20 +1,29 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import KanbanBoard from './Components/KanbanBoard.vue';
-import BoardList from './Components/BoardList.vue';
+import AppLayout from '@/views/AppLayout.vue';
+import BoardsIndex from '@/views/boards/Index.vue';
+import BoardShow from '@/views/boards/Show.vue';
 
 const routes = [
     {
-        path: '/boards/:id',
-        component: KanbanBoard,
-        props: true
-    },
-    {
-        path: '/boards',
-        component: BoardList
-    },
-    {
         path: '/',
-        redirect: '/boards'
+        component: AppLayout,
+        children: [
+            {
+                path: '/boards',
+                name: 'boards.index',
+                component: BoardsIndex
+            },
+            {
+                path: '/boards/:id',
+                name: 'boards.show',
+                component: BoardShow,
+                props: true
+            },
+            {
+                path: '/',
+                redirect: '/boards'
+            }
+        ]
     }
 ];
 
