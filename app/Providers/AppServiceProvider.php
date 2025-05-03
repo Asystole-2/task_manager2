@@ -2,30 +2,24 @@
 
 namespace App\Providers;
 
-use App\Models\Board;
-use App\Models\Column;
-use App\Models\Card;
-use App\Policies\BoardPolicy;
-use App\Policies\ColumnPolicy;
-use App\Policies\CardPolicy;
-use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Vite;
+use Illuminate\Support\ServiceProvider;
 
-class AuthServiceProvider extends ServiceProvider
+class AppServiceProvider extends ServiceProvider
 {
     /**
-     * The policy mappings for the application.
+     * Register any application services.
      */
-    protected $policies = [
-        Board::class => BoardPolicy::class,
-        Column::class => ColumnPolicy::class,
-        Card::class => CardPolicy::class,
-    ];
+    public function register(): void
+    {
+        //
+    }
 
     /**
-     * Register any authentication / authorization services.
+     * Bootstrap any application services.
      */
     public function boot(): void
     {
-        $this->registerPolicies();
+        Vite::prefetch(concurrency: 3);
     }
 }
