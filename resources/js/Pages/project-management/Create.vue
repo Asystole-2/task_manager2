@@ -29,8 +29,7 @@ const submit = () => {
                 <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-500">
                     Create New Project
                 </h2>
-                <Link
-                    :href="route('projects.index')"
+                <Link :href="route('project-management.index')"
                     class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors shadow-md"
                 >
                     Back to Projects

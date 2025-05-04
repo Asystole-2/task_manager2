@@ -16,8 +16,7 @@ defineProps({
                 <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-500">
                     My Projects
                 </h2>
-                <Link
-                    :href="route('projects.create')"
+                <Link :href="route('project-management.create')"
                     class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-md"
                 >
                     + New Project
@@ -38,8 +37,7 @@ defineProps({
                             </p>
                         </div>
                         <div class="p-6">
-                            <Link
-                                :href="route('projects.show', project.id)"
+                            <Link :href="route('project-management.show', project.id)"
                                 class="text-sm font-medium text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300"
                             >
                                 View Project →

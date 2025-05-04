@@ -5,8 +5,12 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ProjectManagementController;
 use App\Http\Controllers\ActivityController;
-
+use App\Models\Task; // Add this line
+use App\Models\CalendarEvent; // Add this line
+use App\Models\Project; // Add this line
+use App\Models\Activity; // Add this line
 // Welcome route - accessible to all (landing page)
 Route::get('/', function () {
     return inertia('Welcome', [
@@ -45,13 +49,13 @@ Route::middleware('auth')->group(function () {
     })->name('dashboard');
 
     // Project Routes
-    Route::prefix('projects')->group(function () {
-        Route::get('/', [ProjectController::class, 'index'])->name('projects.index');
-        Route::get('/create', [ProjectController::class, 'create'])->name('projects.create');
-        Route::post('/', [ProjectController::class, 'store'])->name('projects.store');
-        Route::get('/{project}', [ProjectController::class, 'show'])->name('projects.show');
+    Route::prefix('project-management')->group(function () {
+        Route::get('/', [ProjectManagementController::class, 'index'])->name('project-management.index');
+        Route::get('/create', [ProjectManagementController::class, 'create'])->name('project-management.create');
+        Route::post('/', [ProjectManagementController::class, 'store'])->name('project-management.store');
+        Route::get('/{projectManagement}', [ProjectManagementController::class, 'show'])->name('project-management.show');
+        // Add other routes as needed
     });
-
     // Activity Route
     Route::get('/activity', [ActivityController::class, 'index'])->name('activities.index');
 

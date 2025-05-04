@@ -82,7 +82,7 @@ defineProps({
                         <CountUp :endVal="upcomingEventsCount" :duration="1.5" class="text-3xl font-bold text-purple-600 dark:text-purple-400" />
                     </div>
 
-                    <!-- Active Projects -->
+                    <!-- Active project-management -->
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
                         <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">Active Projects</h3>
                         <CountUp :endVal="activeProjectsCount" :duration="1.5" class="text-3xl font-bold text-orange-600 dark:text-orange-400" />
@@ -120,14 +120,13 @@ defineProps({
                     </div>
                 </div>
 
-                <!-- Projects Section -->
+                <!-- project-management Section -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mt-8">
                     <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                         <div class="flex items-center justify-between">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">My Projects</h3>
-                            <Link
-                                :href="route('projects.index')"
-                                class="text-sm font-medium text-orange-600 hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-300"
+                            <Link :href="route('project-management.index')"
+                                  class="text-sm font-medium text-orange-600 hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-300"
                             >
                                 View All
                             </Link>
