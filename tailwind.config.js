@@ -1,34 +1,44 @@
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-import vue from '@vitejs/plugin-vue';
+import defaultTheme from 'tailwindcss/defaultTheme';
+import forms from '@tailwindcss/forms';
 
-export default defineConfig({
-    plugins: [
-        laravel({
-            input: [
-                'resources/css/app.css',
-                'resources/js/app.js',
-            ],
-            refresh: true,
-        }),
-        vue({
-            template: {
-                transformAssetUrls: {
-                    base: null,
-                    includeAbsolute: false,
-                },
-            },
-        }),
+/** @type {import('tailwindcss').Config} */
+export default {
+    content: [
+        // Blade templates
+        './resources/views/**/*.blade.php',
+        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
+
+        // JavaScript files
+        './resources/js/**/*.js',
+
+        // Vue components
+        './resources/js/**/*.vue',
+        './resources/js/**/*.jsx',
+
+        // Storage views
+        './storage/framework/views/*.php',
     ],
-    optimizeDeps: {
-        include: [
-            '@fullcalendar/core',
-            '@fullcalendar/daygrid',
-            '@fullcalendar/interaction',
-            '@inertiajs/vue3',
-        ],
+    theme: {
+        extend: {
+            fontFamily: {
+                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+            },
+            colors: {
+                // Your theme colors
+                'red-theme': '#e63946',
+                'purple-theme': '#6a4c93',
+                'orange-theme': '#cc5500',
+
+                // Optional: extend default colors
+                gray: {
+                    50: '#f9fafb',
+                    // ... other gray shades
+                }
+            },
+        },
     },
-    css: {
-        postcss: './postcss.config.js'
-    }
-});
+    plugins: [
+        forms,
+        // Add other Tailwind plugins here if needed
+    ],
+};

@@ -15,30 +15,55 @@ defineProps({
 
     <AuthenticatedLayout>
         <template #header>
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                Task Tracker Dashboard
-            </h2>
+            <div class="flex items-center justify-between">
+                <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-500">
+                    Task Dashboard
+                </h2>
+                <div class="flex space-x-4">
+                    <Link
+                        :href="route('tasks.create')"
+                        class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-md"
+                    >
+                        + New Task
+                    </Link>
+                    <Link
+                        :href="route('calendar.index')"
+                        class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors shadow-md"
+                    >
+                        View Calendar
+                    </Link>
+                </div>
+            </div>
         </template>
 
-        <div class="py-12">
-            <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
-                <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div class="py-8">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <!-- Task List -->
-                    <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                            <div class="flex items-center justify-between">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                    My Tasks
+                                </h3>
+                                <span class="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                    {{ tasks.length }} tasks
+                                </span>
+                            </div>
+                        </div>
                         <div class="p-6">
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
-                                My Tasks
-                            </h3>
                             <TaskList :tasks="tasks" />
                         </div>
                     </div>
 
                     <!-- Calendar -->
-                    <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
-                        <div class="p-6">
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                                 My Calendar
                             </h3>
+                        </div>
+                        <div class="p-6">
                             <CalendarWidget :events="events" />
                         </div>
                     </div>
