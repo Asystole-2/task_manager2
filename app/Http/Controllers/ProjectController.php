@@ -10,17 +10,32 @@ class ProjectController extends Controller
 {
     public function index()
     {
-        $projects = Project::where('owner_id', Auth::id())
-            ->orWhereHas('members', function($query) {
-                $query->where('user_id', Auth::id());
-            })
-            ->with(['owner', 'tasks'])
-            ->withCount('tasks')
-            ->latest()
-            ->get();
+        $userId = Auth::id();
 
-        return Inertia::render('Projects/Index', [
+        $tasks = Task::where('user_id', $userId)->get();
+        $pendingTasksCount = $tasks->where('status', 'pending')->count();
+
+        $events = Event::where('user_id', $userId)
+            ->where('date', '>=', now())
+            ->orderBy('date')
+            ->get();
+        $upcomingEventsCount = $events->count();
+
+        $projects = Project::where(function ($query) use ($userId) {
+            $query->where('owner_id', $userId)
+                ->orWhereHas('members', fn ($q) => $q->where('user_id', $userId));
+        })
+            ->where('is_active', true)
+            ->get();
+        $activeProjectsCount = $projects->count();
+
+        return Inertia::render('Dashboard', [
+            'tasks' => $tasks,
+            'events' => $events,
             'projects' => $projects,
+            'pendingTasksCount' => $pendingTasksCount,
+            'upcomingEventsCount' => $upcomingEventsCount,
+            'activeProjectsCount' => $activeProjectsCount,
         ]);
     }
 

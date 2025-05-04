@@ -15,23 +15,50 @@ class TaskController extends Controller
     {
         $query = Task::where('creator_id', auth()->id())
             ->orWhere('assignee_id', auth()->id())
-            ->with(['creator', 'assignee']); // Eager load relationships
+            ->with(['creator', 'assignee']);
 
         // Sorting
         $sortBy = $request->input('sort_by', 'due_date');
         $sortDirection = $request->input('sort_direction', 'asc');
 
-        if (in_array($sortBy, ['title', 'priority', 'due_date', 'status'])) {
+        // Special sorting for priority (custom order)
+        if ($sortBy === 'priority') {
+            $priorityOrder = [
+                'high' => 1,
+                'medium' => 2,
+                'low' => 3
+            ];
+            $query->orderByRaw(
+                "FIELD(priority, 'high', 'medium', 'low') {$sortDirection}"
+            );
+        } else if (in_array($sortBy, ['title', 'due_date', 'status'])) {
             $query->orderBy($sortBy, $sortDirection);
         }
 
-        // Pagination
-        $tasks = $query->paginate(10); // Adjust per page as needed
+        $tasks = $query->get();
+        $pendingTasksCount = Task::where(function($query) {
+            $query->where('creator_id', auth()->id())
+                ->orWhere('assignee_id', auth()->id());
+        })
+            ->where('status', 'pending')
+            ->count();
 
-        return Inertia::render('Dashboard', [
-            'tasks' => $tasks->items(),
-
+        return Inertia::render('Tasks/Index', [
+            'tasks' => $tasks->map(function ($task) {
+                return [
+                    'id' => $task->id,
+                    'title' => $task->title,
+                    'description' => $task->description,
+                    'priority' => $task->priority,
+                    'status' => $task->status,
+                    'due_date' => $task->due_date,
+                    'days_left' => $task->due_date ? now()->diffInDays($task->due_date, false) : null,
+                    'creator' => $task->creator,
+                    'assignee' => $task->assignee,
+                ];
+            }),
             'filters' => $request->only(['sort_by', 'sort_direction']),
+            'pendingTasksCount' => $pendingTasksCount,
         ]);
     }
 

@@ -3,6 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import TaskList from '@/Components/TaskList.vue';
 import CalendarWidget from '@/Components/CalendarWidget.vue';
+import { CountUp } from 'vue3-countup';
 
 defineProps({
     tasks: {
@@ -31,7 +32,6 @@ defineProps({
     },
 });
 </script>
-
 
 <template>
     <Head title="Dashboard" />
@@ -70,23 +70,22 @@ defineProps({
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <!-- Summary Cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Pending Tasks -->
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
                         <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">Pending Tasks</h3>
-                        <p class="mt-2 text-3xl font-bold text-red-600 dark:text-red-400">
-                            {{ pendingTasksCount }}
-                        </p>
+                        <CountUp :endVal="pendingTasksCount" :duration="1.5" class="text-3xl font-bold text-red-600 dark:text-red-400" />
                     </div>
+
+                    <!-- Upcoming Events -->
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
                         <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">Upcoming Events</h3>
-                        <p class="mt-2 text-3xl font-bold text-purple-600 dark:text-purple-400">
-                            {{ upcomingEventsCount }}
-                        </p>
+                        <CountUp :endVal="upcomingEventsCount" :duration="1.5" class="text-3xl font-bold text-purple-600 dark:text-purple-400" />
                     </div>
+
+                    <!-- Active Projects -->
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
                         <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">Active Projects</h3>
-                        <p class="mt-2 text-3xl font-bold text-orange-600 dark:text-orange-400">
-                            {{ activeProjectsCount }}
-                        </p>
+                        <CountUp :endVal="activeProjectsCount" :duration="1.5" class="text-3xl font-bold text-orange-600 dark:text-orange-400" />
                     </div>
                 </div>
 
@@ -98,8 +97,8 @@ defineProps({
                             <div class="flex items-center justify-between">
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">My Tasks</h3>
                                 <span v-if="tasks.length > 0" class="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-                {{ tasks.length }} {{ tasks.length === 1 ? 'task' : 'tasks' }}
-            </span>
+                                    {{ tasks.length }} {{ tasks.length === 1 ? 'task' : 'tasks' }}
+                                </span>
                             </div>
                         </div>
                         <div class="p-6">
@@ -136,7 +135,11 @@ defineProps({
                     </div>
                     <div class="p-6">
                         <div class="space-y-4">
-                            <div v-for="project in projects.slice(0, 3)" :key="project.id" class="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-0 last:pb-0">
+                            <div
+                                v-for="project in projects.slice(0, 3)"
+                                :key="project.id"
+                                class="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-0 last:pb-0"
+                            >
                                 <h4 class="font-medium text-gray-900 dark:text-white">{{ project.name }}</h4>
                                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 truncate">{{ project.description }}</p>
                                 <Link
