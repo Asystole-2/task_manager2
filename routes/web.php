@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ActivityController;
 
 // Welcome route - accessible to all
 Route::get('/', function () {
@@ -13,13 +15,30 @@ Route::get('/', function () {
 // Authenticated routes
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
+        $userId = auth()->id();
+
         return inertia('Dashboard', [
-            'tasks' => \App\Models\Task::where('creator_id', auth()->id())
-                ->orWhere('assignee_id', auth()->id())
+            'tasks' => \App\Models\Task::where('creator_id', $userId)
+                ->orWhere('assignee_id', $userId)
                 ->get(),
-            'events' => \App\Models\CalendarEvent::where('user_id', auth()->id())->get(),
+            'events' => \App\Models\CalendarEvent::where('user_id', $userId)
+                ->whereDate('start', '>=', now())
+                ->get(),
+            'projects' => \App\Models\Project::where('owner_id', $userId)->get(), // Changed from user_id to owner_id
+            'activities' => \App\Models\Activity::where('user_id', $userId)->latest()->take(10)->get(),
         ]);
     })->name('dashboard');
+
+    // Project Routes
+    Route::prefix('projects')->group(function () {
+        Route::get('/', [ProjectController::class, 'index'])->name('projects.index');
+        Route::get('/create', [ProjectController::class, 'create'])->name('projects.create');
+        Route::post('/', [ProjectController::class, 'store'])->name('projects.store');
+        Route::get('/{project}', [ProjectController::class, 'show'])->name('projects.show');
+    });
+
+    // Activity Route
+    Route::get('/activity', [ActivityController::class, 'index'])->name('activity.index');
 
     // Calendar Routes
     Route::prefix('calendar')->group(function () {

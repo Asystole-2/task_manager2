@@ -7,6 +7,9 @@ import CalendarWidget from '@/Components/CalendarWidget.vue';
 defineProps({
     tasks: Array,
     events: Array,
+    pendingTasksCount: Number,
+    upcomingEventsCount: Number,
+    activeProjectsCount: Number,
 });
 </script>
 
@@ -14,6 +17,7 @@ defineProps({
     <Head title="Dashboard" />
 
     <AuthenticatedLayout>
+        <!-- Page Header -->
         <template #header>
             <div class="flex items-center justify-between">
                 <h2 class="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-500">
@@ -38,14 +42,35 @@ defineProps({
 
         <div class="py-8">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">Pending Tasks</h3>
+                        <p class="mt-2 text-3xl font-bold text-red-600 dark:text-red-400">
+                            {{ pendingTasksCount }}
+                        </p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">Upcoming Events</h3>
+                        <p class="mt-2 text-3xl font-bold text-purple-600 dark:text-purple-400">
+                            {{ upcomingEventsCount }}
+                        </p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">Active Projects</h3>
+                        <p class="mt-2 text-3xl font-bold text-orange-600 dark:text-orange-400">
+                            {{ activeProjectsCount }}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Main Content Grid -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <!-- Task List -->
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
                         <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                             <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                                    My Tasks
-                                </h3>
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">My Tasks</h3>
                                 <span class="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
                                     {{ tasks.length }} tasks
                                 </span>
@@ -56,12 +81,10 @@ defineProps({
                         </div>
                     </div>
 
-                    <!-- Calendar -->
+                    <!-- Calendar Widget -->
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
                         <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                                My Calendar
-                            </h3>
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">My Calendar</h3>
                         </div>
                         <div class="p-6">
                             <CalendarWidget :events="events" />

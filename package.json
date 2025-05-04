@@ -6,10 +6,11 @@
         "build": "vite build"
     },
     "dependencies": {
-        "@fullcalendar/core": "^5.11.3",
-        "@fullcalendar/daygrid": "^5.11.3",
-        "@fullcalendar/interaction": "^5.11.3",
-        "@fullcalendar/vue3": "^5.11.3",
+        "@fullcalendar/common": "^5.11.5",
+        "@fullcalendar/core": "^5.11.5",
+        "@fullcalendar/daygrid": "^5.11.5",
+        "@fullcalendar/interaction": "^5.11.5",
+        "@fullcalendar/vue3": "^5.11.5",
         "@inertiajs/vue3": "^1.0.0",
         "@vitejs/plugin-vue": "^4.0.0",
         "axios": "^1.4.0",
