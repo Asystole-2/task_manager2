@@ -128,4 +128,6 @@ const showingNavigationDropdown = ref(false);
             </main>
         </div>
     </div>
+    <QuickAddTaskModal :show="showQuickAdd" @close="showQuickAdd = false" />
+
 </template>

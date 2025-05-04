@@ -7,7 +7,7 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ActivityController;
 
-// Welcome route - accessible to all
+// Welcome route - accessible to all (landing page)
 Route::get('/', function () {
     return inertia('Welcome', [
         'canLogin' => Route::has('login'),
@@ -57,10 +57,9 @@ Route::middleware('auth')->group(function () {
 
     // Calendar Routes
     Route::prefix('calendar')->group(function () {
-        Route::get('/', [CalendarController::class, 'index'])->name('calendar.index');
-        Route::post('/', [CalendarController::class, 'store'])->name('calendar.store');
-        Route::put('/{event}', [CalendarController::class, 'update'])->name('calendar.update');
-        Route::delete('/{event}', [CalendarController::class, 'destroy'])->name('calendar.destroy');
+        Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+        Route::post('/calendar', [CalendarController::class, 'store'])->name('calendar.store');
+        Route::delete('/calendar/{event}', [CalendarController::class, 'destroy'])->name('calendar.destroy');
     });
 
     // Task Routes
@@ -68,9 +67,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [TaskController::class, 'index'])->name('tasks.index');
         Route::get('/create', [TaskController::class, 'create'])->name('tasks.create');
         Route::post('/', [TaskController::class, 'store'])->name('tasks.store');
+        Route::patch('/{task}', [TaskController::class, 'update'])->name('tasks.update');
         Route::delete('/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
     });
-
     // Profile Routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
