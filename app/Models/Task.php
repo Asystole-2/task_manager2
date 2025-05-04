@@ -14,10 +14,10 @@ class Task extends Model
         'title',
         'description',
         'priority',
-        'status',
         'due_date',
         'creator_id',
         'assignee_id',
+        'status',
     ];
 
     protected $casts = [

@@ -48,6 +48,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{event}', [CalendarController::class, 'destroy'])->name('calendar.destroy');
     });
 
+
     // Task Routes
     Route::prefix('tasks')->group(function () {
         Route::get('/', [TaskController::class, 'index'])->name('tasks.index');
