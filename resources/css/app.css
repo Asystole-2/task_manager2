@@ -1,3 +1,60 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Custom colors */
+.bg-red-theme {
+    background-color: #e63946;
+}
+
+.bg-purple-theme {
+    background-color: #6a4c93;
+}
+
+.bg-orange-theme {
+    background-color: #cc5500; /* Burnt orange */
+}
+
+.text-red-theme {
+    color: #e63946;
+}
+
+.text-purple-theme {
+    color: #6a4c93;
+}
+
+.text-orange-theme {
+    color: #cc5500;
+}
+
+/* Calendar styles */
+.fc-event {
+    border: none;
+    padding: 2px 4px;
+    margin: 1px 0;
+}
+
+.fc-daygrid-event {
+    border-radius: 4px;
+}
+
+.fc-event-title {
+    font-weight: 500;
+}
+
+/* Task priority colors */
+.priority-high {
+    @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200;
+}
+
+.priority-medium {
+    @apply bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200;
+}
+
+.priority-low {
+    @apply bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200;
+}
+
+.priority-critical {
+    @apply bg-red-200 text-red-900 dark:bg-red-800 dark:text-red-100;
+}
