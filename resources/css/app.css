@@ -1,6 +1,6 @@
-@import 'tailwindcss/base';
-@import 'tailwindcss/components';
-@import 'tailwindcss/utilities';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Custom colors */
 .bg-red-theme {
@@ -12,7 +12,7 @@
 }
 
 .bg-orange-theme {
-    background-color: #cc5500; /* Burnt orange */
+    background-color: #cc5500;
 }
 
 .text-red-theme {
@@ -57,4 +57,18 @@
 
 .priority-critical {
     @apply bg-red-200 text-red-900 dark:bg-red-800 dark:text-red-100;
+}
+
+@layer components {
+    .gradient-text {
+        @apply bg-clip-text text-transparent bg-gradient-to-r from-red-600 to-orange-500;
+    }
+
+    .blur-circle {
+        @apply absolute rounded-full mix-blend-multiply filter blur-3xl opacity-20;
+    }
+
+    .glass-header {
+        @apply bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm;
+    }
 }
