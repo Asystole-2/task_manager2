@@ -1,7 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { Link } from '@inertiajs/vue3';
-
+import { Link } from '@inertiajs/vue3'; // Make sure this is imported
 import SidebarNavigation from '@/Components/SidebarNavigation.vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
@@ -34,9 +33,12 @@ const showingNavigationDropdown = ref(false);
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">Dashboard</NavLink>
+
                             </div>
                         </div>
-
+                        <NavLink :href="route('activities.index')" :active="route().current('activities.index')">
+                            Activity Feed
+                        </NavLink>
                         <!-- Settings Dropdown -->
                         <div class="hidden sm:ms-6 sm:flex sm:items-center">
                             <div class="relative ms-3">

@@ -9,8 +9,16 @@ use App\Http\Controllers\ActivityController;
 
 // Welcome route - accessible to all
 Route::get('/', function () {
-    return inertia('Welcome');
+    return inertia('Welcome', [
+        'canLogin' => Route::has('login'),
+        'canRegister' => Route::has('register'),
+    ]);
 })->name('home');
+
+// Guest view route
+Route::get('/guest-view', function () {
+    return inertia('Guest/View');
+})->name('guest.view');
 
 // Authenticated routes
 Route::middleware('auth')->group(function () {
@@ -24,8 +32,15 @@ Route::middleware('auth')->group(function () {
             'events' => \App\Models\CalendarEvent::where('user_id', $userId)
                 ->whereDate('start', '>=', now())
                 ->get(),
-            'projects' => \App\Models\Project::where('owner_id', $userId)->get(), // Changed from user_id to owner_id
-            'activities' => \App\Models\Activity::where('user_id', $userId)->latest()->take(10)->get(),
+            'projects' => \App\Models\Project::where('owner_id', $userId)->get(),
+            'activities' => \App\Models\Activity::with(['user', 'task', 'project'])
+                ->where('user_id', $userId)
+                ->orWhereHas('project', function($query) use ($userId) {
+                    $query->where('owner_id', $userId);
+                })
+                ->latest()
+                ->take(10)
+                ->get(),
         ]);
     })->name('dashboard');
 
@@ -38,7 +53,7 @@ Route::middleware('auth')->group(function () {
     });
 
     // Activity Route
-    Route::get('/activity', [ActivityController::class, 'index'])->name('activity.index');
+    Route::get('/activity', [ActivityController::class, 'index'])->name('activities.index');
 
     // Calendar Routes
     Route::prefix('calendar')->group(function () {
@@ -47,7 +62,6 @@ Route::middleware('auth')->group(function () {
         Route::put('/{event}', [CalendarController::class, 'update'])->name('calendar.update');
         Route::delete('/{event}', [CalendarController::class, 'destroy'])->name('calendar.destroy');
     });
-
 
     // Task Routes
     Route::prefix('tasks')->group(function () {

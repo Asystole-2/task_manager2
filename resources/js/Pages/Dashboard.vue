@@ -5,14 +5,33 @@ import TaskList from '@/Components/TaskList.vue';
 import CalendarWidget from '@/Components/CalendarWidget.vue';
 
 defineProps({
-    tasks: Array,
-    events: Array,
-    pendingTasksCount: Number,
-    upcomingEventsCount: Number,
-    activeProjectsCount: Number,
-    projects: Array,  // Added the projects prop to get the list of projects
+    tasks: {
+        type: Array,
+        default: () => []
+    },
+    events: {
+        type: Array,
+        default: () => []
+    },
+    pendingTasksCount: {
+        type: Number,
+        default: 0
+    },
+    upcomingEventsCount: {
+        type: Number,
+        default: 0
+    },
+    activeProjectsCount: {
+        type: Number,
+        default: 0
+    },
+    projects: {
+        type: Array,
+        default: () => []
+    },
 });
 </script>
+
 
 <template>
     <Head title="Dashboard" />
@@ -78,13 +97,16 @@ defineProps({
                         <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                             <div class="flex items-center justify-between">
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">My Tasks</h3>
-                                <span class="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
-                                    {{ tasks.length }} tasks
-                                </span>
+                                <span v-if="tasks.length > 0" class="px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                {{ tasks.length }} {{ tasks.length === 1 ? 'task' : 'tasks' }}
+            </span>
                             </div>
                         </div>
                         <div class="p-6">
                             <TaskList :tasks="tasks" />
+                            <div v-if="tasks.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-4">
+                                No tasks yet
+                            </div>
                         </div>
                     </div>
 

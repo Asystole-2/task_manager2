@@ -27,5 +27,8 @@ class AuthServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->registerPolicies();
+
+        \App\Models\Project::observe(\App\Observers\ProjectObserver::class);
+        \App\Models\Task::observe(\App\Observers\ActivityObserver::class);
     }
 }

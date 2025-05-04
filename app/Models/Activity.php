@@ -10,9 +10,17 @@ class Activity extends Model
 {
     use HasFactory;
 
+    protected $table = 'activity_log';
     protected $fillable = [
         'description',
         'user_id',
+        'task_id',
+        'project_id',
+        'properties'
+    ];
+
+    protected $casts = [
+        'properties' => 'array',
     ];
 
     public function user()
@@ -20,7 +28,17 @@ class Activity extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Optional: accessors for UI
+
+    public function task()
+    {
+        return $this->belongsTo(Task::class);
+    }
+
+    public function project()
+    {
+        return $this->belongsTo(Project::class);
+    }
+
     public function getInitialsAttribute()
     {
         return strtoupper(substr($this->user->name ?? 'U', 0, 1));

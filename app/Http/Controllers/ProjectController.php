@@ -53,7 +53,15 @@ class ProjectController extends Controller
 
     public function show(Project $project)
     {
-        $project->load(['tasks', 'owner', 'members']);
+        $project->load([
+            'tasks',
+            'owner',
+            'members',
+            'activities' => function($query) {
+                $query->latest()->take(10);
+            },
+            'activities.user'
+        ]);
 
         return Inertia::render('Projects/Show', [
             'project' => $project,
