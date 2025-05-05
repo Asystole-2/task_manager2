@@ -26,6 +26,7 @@ Route::get('/guest-view', function () {
 
 // Authenticated routes
 Route::middleware('auth')->group(function () {
+    // In web.php
     Route::get('/dashboard', function () {
         $userId = auth()->id();
 
@@ -36,25 +37,29 @@ Route::middleware('auth')->group(function () {
             'events' => \App\Models\CalendarEvent::where('user_id', $userId)
                 ->whereDate('start', '>=', now())
                 ->get(),
-            'projects' => \App\Models\Project::where('owner_id', $userId)->get(),
-            'activities' => \App\Models\Activity::with(['user', 'task', 'project'])
-                ->where('user_id', $userId)
-                ->orWhereHas('project', function($query) use ($userId) {
-                    $query->where('owner_id', $userId);
-                })
-                ->latest()
-                ->take(10)
-                ->get(),
+            'projects' => \App\Models\ProjectManagement::where('owner_id', $userId)->get(),
+            'pendingTasksCount' => \App\Models\Task::where(function($query) use ($userId) {
+                $query->where('creator_id', $userId)
+                    ->orWhere('assignee_id', $userId);
+            })->where('status', 'pending')->count(),
+            'upcomingEventsCount' => \App\Models\CalendarEvent::where('user_id', $userId)
+                ->whereDate('start', '>=', now())
+                ->count(),
+            'activeProjectsCount' => \App\Models\ProjectManagement::where('owner_id', $userId)
+                ->where('is_active', true)
+                ->count(),
         ]);
     })->name('dashboard');
 
     // Project Routes
-    Route::prefix('project-management')->group(function () {
-        Route::get('/', [ProjectManagementController::class, 'index'])->name('project-management.index');
-        Route::get('/create', [ProjectManagementController::class, 'create'])->name('project-management.create');
-        Route::post('/', [ProjectManagementController::class, 'store'])->name('project-management.store');
-        Route::get('/{projectManagement}', [ProjectManagementController::class, 'show'])->name('project-management.show');
+    Route::prefix('ProjectManagement')->group(function () {
+        Route::get('/', [ProjectManagementController::class, 'index'])->name('ProjectManagement.index');
+        Route::get('/create', [ProjectManagementController::class, 'create'])->name('ProjectManagement.create');
+        Route::post('/', [ProjectManagementController::class, 'store'])->name('ProjectManagement.store');
+        Route::get('/{projectManagement}', [ProjectManagementController::class, 'show'])->name('ProjectManagement.show');
         // Add other routes as needed
+        Route::get('/{projectManagement}/edit', [ProjectManagementController::class, 'edit'])->name('ProjectManagement.edit');
+        Route::put('/{projectManagement}', [ProjectManagementController::class, 'update'])->name('ProjectManagement.update');
     });
     // Activity Route
     Route::get('/activity', [ActivityController::class, 'index'])->name('activities.index');

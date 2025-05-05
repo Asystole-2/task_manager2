@@ -17,12 +17,12 @@ defineProps({
                     {{ project.name }}
                 </h2>
                 <div class="flex space-x-4">
-                    <Link :href="route('project-management.index')"
+                    <Link :href="route('ProjectManagement.index')"
                         class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors shadow-md"
                     >
                         Back to Projects
                     </Link>
-                    <Link :href="route('project-management.edit', project.id)"
+                    <Link :href="route('ProjectManagement.edit', project.id)"
                         class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
                     >
                         Edit Project

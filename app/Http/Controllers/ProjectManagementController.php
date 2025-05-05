@@ -32,7 +32,7 @@ class ProjectManagementController extends Controller
             'owner_id' => auth()->id()
         ]);
 
-        return redirect()->route('project-management.index')
+        return redirect()->route('ProjectManagement.index')
             ->with('success', 'Project created successfully!');
     }
 
@@ -43,4 +43,26 @@ class ProjectManagementController extends Controller
     }
 
     // Add other methods (edit, update, destroy) as needed
+
+    public function edit(ProjectManagement $projectManagement)
+    {
+        return inertia('ProjectManagement/Edit', compact('projectManagement'));
+    }
+
+    public function update(Request $request, ProjectManagement $projectManagement)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
+            'is_active' => 'boolean',
+        ]);
+
+        $projectManagement->update($validated);
+
+        return redirect()->route('ProjectManagement.show', $projectManagement)
+            ->with('success', 'Project updated successfully!');
+    }
+
 }

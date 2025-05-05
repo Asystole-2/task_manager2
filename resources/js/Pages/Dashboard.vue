@@ -28,7 +28,12 @@ defineProps({
     },
     projects: {
         type: Array,
-        default: () => []
+        default: () => [],
+        validator: (value) => {
+            // Ensure projects array contains unique IDs
+            const ids = value.map(project => project.id);
+            return new Set(ids).size === ids.length;
+        }
     },
 });
 </script>
@@ -50,6 +55,12 @@ defineProps({
                     Task Dashboard
                 </h2>
                 <div class="flex space-x-4">
+                    <Link
+                        :href="route('ProjectManagement.create')"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+                    >
+                        + New Project
+                    </Link>
                     <Link
                         :href="route('tasks.create')"
                         class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-md"
@@ -82,7 +93,7 @@ defineProps({
                         <CountUp :endVal="upcomingEventsCount" :duration="1.5" class="text-3xl font-bold text-purple-600 dark:text-purple-400" />
                     </div>
 
-                    <!-- Active project-management -->
+                    <!-- Active Projects -->
                     <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
                         <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">Active Projects</h3>
                         <CountUp :endVal="activeProjectsCount" :duration="1.5" class="text-3xl font-bold text-orange-600 dark:text-orange-400" />
@@ -120,37 +131,38 @@ defineProps({
                     </div>
                 </div>
 
-                <!-- project-management Section -->
+                <!-- Projects Section -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mt-8">
                     <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                         <div class="flex items-center justify-between">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">My Projects</h3>
-                            <Link :href="route('project-management.index')"
-                                  class="text-sm font-medium text-orange-600 hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-300"
+                            <Link
+                                :href="route('ProjectManagement.index')"
+                                class="text-sm font-medium text-orange-600 hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-300"
                             >
                                 View All
                             </Link>
                         </div>
                     </div>
                     <div class="p-6">
-                        <div class="space-y-4">
+                        <div v-if="projects.length > 0" class="space-y-4">
                             <div
                                 v-for="project in projects.slice(0, 3)"
-                                :key="project.id"
+                                :key="`project-${project.id}`"
                                 class="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-0 last:pb-0"
                             >
                                 <h4 class="font-medium text-gray-900 dark:text-white">{{ project.name }}</h4>
                                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 truncate">{{ project.description }}</p>
                                 <Link
-                                    :href="route('projects.show', project.id)"
+                                    :href="route('ProjectManagement.show', project.id)"
                                     class="mt-2 inline-flex text-sm font-medium text-orange-600 hover:text-orange-500 dark:text-orange-400 dark:hover:text-orange-300"
                                 >
                                     View Project
                                 </Link>
                             </div>
-                            <div v-if="projects.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-4">
-                                No projects yet
-                            </div>
+                        </div>
+                        <div v-else class="text-center text-gray-500 dark:text-gray-400 py-4">
+                            No projects yet
                         </div>
                     </div>
                 </div>

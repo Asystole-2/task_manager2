@@ -41,7 +41,7 @@ class ProjectController extends Controller
 
     public function create()
     {
-        return Inertia::render('project-management/Create');
+        return Inertia::render('ProjectManagement/Create');
     }
 
     public function store(Request $request)
@@ -78,7 +78,7 @@ class ProjectController extends Controller
             'activities.user'
         ]);
 
-        return Inertia::render('project-management/Show', [
+        return Inertia::render('ProjectManagement/Show', [
             'project' => $project,
         ]);
     }
