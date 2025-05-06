@@ -10,7 +10,7 @@ class ProjectManagementController extends Controller
     public function index()
     {
         $projects = ProjectManagement::where('owner_id', auth()->id())->get();
-        return inertia('ProjectManagement/Index', compact('projects'));
+        return inertia('ProjectManagement/Index', ['projects' => $projects]);
     }
 
     public function create()
@@ -38,15 +38,25 @@ class ProjectManagementController extends Controller
 
     public function show(ProjectManagement $projectManagement)
     {
-        $projectManagement->load(['owner', 'tasks', 'members']);
-        return inertia('ProjectManagement/Show', compact('projectManagement'));
-    }
+        $projectManagement->load([
+            'owner',
+            'tasks',
+            'members',
+            'activities' => function($query) {
+                $query->latest()->limit(10);
+            },
+            'activities.user'
+        ]);
 
-    // Add other methods (edit, update, destroy) as needed
+        return inertia('ProjectManagement/Show', [
+            'project' => $projectManagement
+        ]);
+    }
 
     public function edit(ProjectManagement $projectManagement)
     {
-        return inertia('ProjectManagement/Edit', compact('projectManagement'));
+        $projectManagement->load(['owner', 'tasks', 'members']);
+        return inertia('ProjectManagement/Edit', ['project' => $projectManagement]);
     }
 
     public function update(Request $request, ProjectManagement $projectManagement)
@@ -65,4 +75,10 @@ class ProjectManagementController extends Controller
             ->with('success', 'Project updated successfully!');
     }
 
+    public function destroy(ProjectManagement $projectManagement)
+    {
+        $projectManagement->delete();
+        return redirect()->route('ProjectManagement.index')
+            ->with('success', 'Project deleted successfully!');
+    }
 }

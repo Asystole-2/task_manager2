@@ -18,6 +18,7 @@ class Task extends Model
         'creator_id',
         'assignee_id',
         'status',
+        'project_management_id', // Add this
     ];
 
     protected $casts = [
@@ -32,5 +33,11 @@ class Task extends Model
     public function assignee(): BelongsTo
     {
         return $this->belongsTo(User::class, 'assignee_id');
+    }
+
+    // Replace the project() relationship with projectManagement()
+    public function projectManagement(): BelongsTo
+    {
+        return $this->belongsTo(ProjectManagement::class, 'project_management_id');
     }
 }

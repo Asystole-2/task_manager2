@@ -2,36 +2,45 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class ProjectManagement extends Model
 {
-    use HasFactory;
-    protected $table = 'project_managements';
     protected $fillable = [
         'name',
         'description',
+        'owner_id',
         'start_date',
         'end_date',
-        'is_active',
-        'owner_id'
+        'is_active'
     ];
 
-    public function owner()
+    // Relationship with owner (User)
+    public function owner(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'owner_id');
     }
 
-    public function tasks()
+    // Relationship with tasks
+    public function tasks(): HasMany
     {
         return $this->hasMany(Task::class);
     }
 
-    public function members()
+    // Relationship with team members (Users)
+    public function members(): BelongsToMany
     {
         return $this->belongsToMany(User::class)
             ->withPivot('role')
             ->withTimestamps();
+    }
+
+    // Relationship with activities
+    public function activities(): HasMany
+    {
+        return $this->hasMany(Activity::class);
     }
 }

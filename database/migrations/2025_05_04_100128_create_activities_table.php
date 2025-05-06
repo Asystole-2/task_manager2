@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('activities', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('project_management_id')->constrained();
             $table->text('description');
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->json('properties')->nullable();
             $table->timestamps();
         });
     }
