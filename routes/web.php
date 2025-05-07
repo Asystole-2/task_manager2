@@ -10,12 +10,6 @@ use App\Models\CalendarEvent;
 use App\Models\Task;
 use Illuminate\Support\Facades\Route;
 
-// Updated import
-// Add this line
-// Add this line
-// Add this line
-// Add this line
-
 // Welcome route - accessible to all (landing page)
 Route::get('/', function () {
     return inertia('Welcome', [
@@ -62,9 +56,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/create', [ProjectManagementController::class, 'create'])->name('ProjectManagement.create');
         Route::post('/', [ProjectManagementController::class, 'store'])->name('ProjectManagement.store');
         Route::get('/{projectManagement}', [ProjectManagementController::class, 'show'])->name('ProjectManagement.show');
-        Route::get('/projects/{projectManagement}/edit', [ProjectManagementController::class, 'edit'])->name('ProjectManagement.edit');
+        Route::get('/{projectManagement}/edit', [ProjectManagementController::class, 'edit'])->name('ProjectManagement.edit');
         Route::put('/{projectManagement}', [ProjectManagementController::class, 'update'])->name('ProjectManagement.update');
-        Route::post('/project-management/{projectManagement}/tasks', [ProjectManagementController::class, 'addTasks'])->name('ProjectManagement.tasks.add');
+        Route::post('/{projectManagement}/tasks', [ProjectManagementController::class, 'addTasks'])->name('ProjectManagement.tasks.add');
     });
 
     // Activity Route
@@ -72,15 +66,15 @@ Route::middleware('auth')->group(function () {
 
     // Calendar Routes
     Route::prefix('calendar')->group(function () {
-        Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
-        Route::post('/calendar', [CalendarController::class, 'store'])->name('calendar.store');
-        Route::delete('/calendar/{event}', [CalendarController::class, 'destroy'])->name('calendar.destroy');
+        Route::get('/', [CalendarController::class, 'index'])->name('calendar.index');
+        Route::post('/', [CalendarController::class, 'store'])->name('calendar.store');
+        Route::delete('/{event}', [CalendarController::class, 'destroy'])->name('calendar.destroy');
     });
 
     // To-Do Routes
     Route::prefix('todos')->group(function () {
         Route::get('/', [TodoController::class, 'index'])->name('todos.index');
-        Route::post('/', [TodoController::class, 'index'])->name('todos.store');
+        Route::post('/', [TodoController::class, 'store'])->name('todos.store');
         Route::patch('/{todo}', [TodoController::class, 'update'])->name('todos.update');
         Route::delete('/{todo}', [TodoController::class, 'destroy'])->name('todos.destroy');
     });
@@ -90,8 +84,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [TaskController::class, 'index'])->name('tasks.index');
         Route::get('/create', [TaskController::class, 'create'])->name('tasks.create');
         Route::post('/', [TaskController::class, 'store'])->name('tasks.store');
+        Route::get('/{task}', [TaskController::class, 'show'])->name('tasks.show');
+        Route::get('/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
         Route::patch('/{task}', [TaskController::class, 'update'])->name('tasks.update');
-        Route::get('/tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
         Route::delete('/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
     });
 
