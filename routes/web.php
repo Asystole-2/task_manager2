@@ -58,7 +58,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [ProjectManagementController::class, 'store'])->name('ProjectManagement.store');
         Route::get('/{projectManagement}', [ProjectManagementController::class, 'show'])->name('ProjectManagement.show');
         // Add other routes as needed
-        Route::get('/{projectManagement}/edit', [ProjectManagementController::class, 'edit'])->name('ProjectManagement.edit');
+        Route::get('/projects/{projectManagement}/edit', [ProjectManagementController::class, 'edit'])->name('ProjectManagement.edit');
         Route::put('/{projectManagement}', [ProjectManagementController::class, 'update'])->name('ProjectManagement.update');
         Route::post('/project-management/{projectManagement}/tasks', [ProjectManagementController::class, 'addTasks'])
             ->name('ProjectManagement.tasks.add');
