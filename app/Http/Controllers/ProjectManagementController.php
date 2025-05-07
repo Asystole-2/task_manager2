@@ -40,11 +40,12 @@ class ProjectManagementController extends Controller
     {
         $projectManagement->load(['tasks', 'owner', 'members', 'activities']);
 
-        $availableTasks = Task::where('creator_id', auth()->id()) // Use creator_id
-        ->whereDoesntHave('project', function($query) use ($projectManagement) {
-            $query->where('project_id', $projectManagement->id);
-        })
+        $availableTasks = Task::where('creator_id', auth()->id())
+            ->whereDoesntHave('project', function($query) use ($projectManagement) {
+                $query->where('project_id', $projectManagement->id);
+            })
             ->get();
+
         return inertia('ProjectManagement/Show', [
             'project' => $projectManagement,
             'availableTasks' => $availableTasks
@@ -80,4 +81,22 @@ class ProjectManagementController extends Controller
         return $this->hasMany(Task::class);
     }
 
+
+
+    public function addTasks(Request $request, ProjectManagement $projectManagement)
+    {
+        $validated = $request->validate([
+            'task_ids' => 'required|array',
+            'task_ids.*' => 'exists:tasks,id', // Validate that each ID exists in the tasks table
+        ]);
+
+        // Logic to associate tasks with the project
+        foreach ($validated['task_ids'] as $taskId) {
+            $task = Task::find($taskId);
+            $task->project_id = $projectManagement->id; // Assuming you have a project_id column in the tasks table
+            $task->save();
+        }
+
+        return back()->with('success', 'Tasks added to project successfully!');
+    }
 }

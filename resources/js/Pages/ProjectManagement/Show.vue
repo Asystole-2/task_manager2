@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-defineProps({
+const props = defineProps({
     project: Object,
     availableTasks: Array
 });
@@ -16,12 +16,17 @@ const form = useForm({
 });
 
 const addTasks = () => {
+    console.log('Project:', props.project); // Check if project is defined
     form.task_ids = selectedTasks.value;
-    form.post(route('ProjectManagement.tasks.add', project.id), {
+
+    form.post(route('ProjectManagement.tasks.add', props.project.id), {
         preserveScroll: true,
         onSuccess: () => {
             showTaskModal.value = false;
             selectedTasks.value = [];
+        },
+        onError: (errors) => {
+            console.error('Error adding tasks:', errors);
         }
     });
 };

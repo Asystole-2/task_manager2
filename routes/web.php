@@ -79,6 +79,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/create', [TaskController::class, 'create'])->name('tasks.create');
         Route::post('/', [TaskController::class, 'store'])->name('tasks.store');
         Route::patch('/{task}', [TaskController::class, 'update'])->name('tasks.update');
+        Route::get('/tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
         Route::delete('/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
     });
     // Profile Routes

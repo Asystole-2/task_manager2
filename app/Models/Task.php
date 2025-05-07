@@ -9,6 +9,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Task extends Model
 {
     use HasFactory;
+    public function project()
+    {
+        return $this->belongsTo(ProjectManagement::class, 'project_id');
+    }
 
     protected $fillable = [
         'title',
@@ -34,9 +38,5 @@ class Task extends Model
         return $this->belongsTo(User::class, 'assignee_id');
     }
     // In app/Models/Task.php
-    public function project()
-    {
-        return $this->belongsTo(ProjectManagement::class, 'project_id');
-    }
 
 }
