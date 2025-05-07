@@ -75,6 +75,41 @@ class ProjectManagementController extends Controller
             ->with('success', 'Project updated successfully!');
     }
 
+    public function addMember(Request $request, ProjectManagement $projectManagement)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'role' => 'nullable|string|max:255',
+        ]);
+
+        // Prevent duplicate members
+        if ($projectManagement->members()->where('user_id', $request->user_id)->exists()) {
+            return redirect()->back()->with('error', 'User is already a member of this project');
+        }
+
+        $projectManagement->members()->attach($request->user_id, [
+            'role' => $request->role ?? 'member'
+        ]);
+
+        return redirect()->back()->with('success', 'Member added successfully!');
+    }
+
+    public function removeMember(ProjectManagement $projectManagement, User $user)
+    {
+        $projectManagement->members()->detach($user->id);
+        return redirect()->back()->with('success', 'Member removed successfully!');
+    }
+
+    public function availableMembers(ProjectManagement $projectManagement)
+    {
+        $currentMemberIds = $projectManagement->members()->pluck('users.id');
+        $availableUsers = User::whereNotIn('id', $currentMemberIds)
+            ->where('id', '!=', $projectManagement->owner_id)
+            ->get(['id', 'name', 'email']);
+
+        return response()->json($availableUsers);
+    }
+
     public function destroy(ProjectManagement $projectManagement)
     {
         $projectManagement->delete();
