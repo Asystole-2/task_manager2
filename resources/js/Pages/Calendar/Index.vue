@@ -11,9 +11,7 @@ const props = defineProps({
     events: Array,
 });
 
-const calendarRef = ref(null);
-
-const calendarOptions = {
+const calendarOptions = ref({
     plugins: [dayGridPlugin, interactionPlugin],
     initialView: 'dayGridMonth',
     headerToolbar: {
@@ -48,7 +46,7 @@ const calendarOptions = {
             router.delete(route('calendar.destroy', info.event.id));
         }
     }
-};
+});
 </script>
 
 <template>
@@ -64,7 +62,7 @@ const calendarOptions = {
         <div class="py-8">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden p-6">
-                    <FullCalendar ref="calendarRef" :options="calendarOptions" />
+                    <FullCalendar :options="calendarOptions" />
                 </div>
             </div>
         </div>

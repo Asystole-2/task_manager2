@@ -3,68 +3,39 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\ProjectManagement;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Facades\DB;
 
 class TaskController extends Controller
 {
-    use AuthorizesRequests;
-
     public function index(Request $request)
     {
-        $query = Task::where('creator_id', auth()->id())
-            ->orWhere('assignee_id', auth()->id())
-            ->with(['creator', 'assignee']);
+        $tasks = Task::query()
+            ->where('project_management_id', $request->project_id)
+            ->with(['creator', 'assignee', 'members'])
+            ->get()
+            ->groupBy('status');
 
-        // Sorting
-        $sortBy = $request->input('sort_by', 'due_date');
-        $sortDirection = $request->input('sort_direction', 'asc');
-
-        // Special sorting for priority (custom order)
-        if ($sortBy === 'priority') {
-            $priorityOrder = [
-                'high' => 1,
-                'medium' => 2,
-                'low' => 3
-            ];
-            $query->orderByRaw(
-                "FIELD(priority, 'high', 'medium', 'low') {$sortDirection}"
-            );
-        } else if (in_array($sortBy, ['title', 'due_date', 'status'])) {
-            $query->orderBy($sortBy, $sortDirection);
-        }
-
-        $tasks = $query->get();
-        $pendingTasksCount = Task::where(function($query) {
-            $query->where('creator_id', auth()->id())
-                ->orWhere('assignee_id', auth()->id());
-        })
-            ->where('status', 'pending')
-            ->count();
-
-        return Inertia::render('Tasks/Index', [
-            'tasks' => $tasks->map(function ($task) {
-                return [
-                    'id' => $task->id,
-                    'title' => $task->title,
-                    'description' => $task->description,
-                    'priority' => $task->priority,
-                    'status' => $task->status,
-                    'due_date' => $task->due_date,
-                    'days_left' => $task->due_date ? now()->diffInDays($task->due_date, false) : null,
-                    'creator' => $task->creator,
-                    'assignee' => $task->assignee,
-                ];
-            }),
-            'filters' => $request->only(['sort_by', 'sort_direction']),
-            'pendingTasksCount' => $pendingTasksCount,
+        return response()->json([
+            'standby' => $tasks->get(Task::STATUS_STANDBY, []),
+            'ongoing' => $tasks->get(Task::STATUS_ONGOING, []),
+            'done' => $tasks->get(Task::STATUS_DONE, []),
         ]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return Inertia::render('Tasks/Create');
+        $projectId = $request->project_id;
+        $project = ProjectManagement::find($projectId);
+        $users = User::all();
+
+        return Inertia::render('Tasks/Create', [
+            'project' => $project,
+            'availableMembers' => $users,
+        ]);
     }
 
     public function store(Request $request)
@@ -74,42 +45,63 @@ class TaskController extends Controller
             'description' => 'nullable|string',
             'priority' => 'required|in:low,medium,high,critical',
             'due_date' => 'nullable|date|after_or_equal:today',
+            'project_management_id' => 'required|exists:project_management,id',
+            'assignee_id' => 'nullable|exists:users,id',
+            'member_ids' => 'sometimes|array',
+            'member_ids.*' => 'exists:users,id',
         ]);
 
-        Task::create([
-            'title' => $validated['title'],
-            'description' => $validated['description'],
-            'priority' => $validated['priority'],
-            'due_date' => $validated['due_date'],
+        $task = Task::create([
+            ...$validated,
             'creator_id' => auth()->id(),
-            'status' => 'pending',
+            'status' => Task::STATUS_STANDBY,
         ]);
 
-        return redirect()
-            ->route('dashboard')
-            ->with('success', 'Task created successfully!');
+        if ($request->has('member_ids')) {
+            $task->members()->sync($request->member_ids);
+        }
+
+        return redirect()->back()->with('success', 'Task created successfully!');
     }
 
-    public function destroy(Task $task)
-    {
-        $this->authorize('delete', $task);
-        $task->delete();
-        return redirect()
-            ->back()
-            ->with('success', 'Task deleted successfully!');
-    }
-
-    // Add to TaskController.php
     public function update(Request $request, Task $task)
     {
-        $this->authorize('update', $task);
-
         $validated = $request->validate([
-            'status' => 'required|in:pending,in_progress,completed'
+            'status' => 'sometimes|in:standby,ongoing,done',
+            'title' => 'sometimes|string|max:255',
+            'description' => 'sometimes|nullable|string',
+            'priority' => 'sometimes|in:low,medium,high,critical',
+            'due_date' => 'sometimes|nullable|date',
+            'assignee_id' => 'sometimes|nullable|exists:users,id',
+            'member_ids' => 'sometimes|array',
+            'member_ids.*' => 'exists:users,id',
         ]);
 
         $task->update($validated);
 
-        return redirect()->back()->with('success', 'Task status updated!');
+        if ($request->has('member_ids')) {
+            $task->members()->sync($request->member_ids);
+        }
+
+        return response()->json(['message' => 'Task updated successfully']);
+    }
+
+    public function updateStatus(Request $request)
+    {
+        $request->validate([
+            'task_id' => 'required|exists:tasks,id',
+            'status' => 'required|in:standby,ongoing,done',
+        ]);
+
+        $task = Task::find($request->task_id);
+        $task->update(['status' => $request->status]);
+
+        return response()->json(['message' => 'Task status updated']);
+    }
+
+    public function destroy(Task $task)
+    {
+        $task->delete();
+        return redirect()->back()->with('success', 'Task deleted successfully!');
     }
 }

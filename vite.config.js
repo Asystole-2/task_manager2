@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 import vue from '@vitejs/plugin-vue';
+import path from 'path';
 
 export default defineConfig({
     plugins: [
@@ -20,7 +21,21 @@ export default defineConfig({
             },
         }),
     ],
-    css: {
-        postcss: './postcss.config.js'
+    resolve: {
+        alias: {
+            '@': '/resources/js',
+            'ziggy': path.resolve(__dirname, 'vendor/tightenco/ziggy/src/js'),
+        },
+    },
+    optimizeDeps: {
+        include: [
+            '@fullcalendar/core',
+            '@fullcalendar/daygrid',
+            '@fullcalendar/interaction',
+            '@fullcalendar/vue3',
+            '@vueform/multiselect',
+            'vuedraggable'
+        ],
+        exclude: ['@fullcalendar/vdom']
     }
 });

@@ -7,10 +7,10 @@ import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import QuickAddTaskModal from '@/Components/QuickAddTaskModal.vue'; // Import the QuickAddTaskModal
+import QuickAddTaskModal from '@/Components/QuickAddTaskModal.vue';
 
 const showingNavigationDropdown = ref(false);
-const showQuickAdd = ref(false); // Define the showQuickAdd property
+const showQuickAdd = ref(false);
 </script>
 
 <template>
@@ -35,6 +35,7 @@ const showQuickAdd = ref(false); // Define the showQuickAdd property
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">Dashboard</NavLink>
+
                             </div>
                         </div>
 

@@ -1,29 +1,25 @@
-import '../css/app.css';
 import './bootstrap';
+import '../css/app.css';
 
+import { createApp, h } from 'vue';
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import { createApp, h } from 'vue';
-import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+import { ZiggyVue } from 'ziggy';
+import Multiselect from '@vueform/multiselect';
+import draggable from 'vuedraggable';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Task Manager';
+// Set your app name
+const appName = window.appName || 'Task Manager';
 
 createInertiaApp({
     title: (title) => `${title} - ${appName}`,
-    resolve: (name) => {
-        const pages = import.meta.glob('./Pages/**/*.vue', { eager: true });
-        return pages[`./Pages/${name}.vue`];
-    },
+    resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
-        // Redirect to /dashboard if user is authenticated and trying to access welcome page
-        if (props.initialPage.component === 'Welcome' && props.initialPage.props.auth.user) {
-            window.location.href = '/dashboard';
-            return;
-        }
-
         return createApp({ render: () => h(App, props) })
             .use(plugin)
-            .use(ZiggyVue)
+            .use(ZiggyVue, Ziggy)
+            .component('Multiselect', Multiselect)
+            .component('draggable', draggable)
             .mount(el);
     },
     progress: {
