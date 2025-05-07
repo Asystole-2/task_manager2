@@ -9,9 +9,9 @@ class CreateTodosTable extends Migration
     {
         Schema::create('todos', function (Blueprint $table) {
             $table->id();
-            $table->string('title'); // Title of the to-do item
-            $table->boolean('completed')->default(false); // Completion status
-            $table->foreignId('user_id')->constrained()->onDelete('cascade'); // User who created the to-do
+            $table->string('title');
+            $table->boolean('completed')->default(false);
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

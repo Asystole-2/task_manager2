@@ -1,17 +1,20 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\TaskController;
-use App\Http\Controllers\CalendarController;
-use App\Http\Controllers\TodoController;
-use App\Http\Controllers\ProjectController;
-use App\Http\Controllers\ProjectManagementController;
 use App\Http\Controllers\ActivityController;
-use App\Models\Task; // Add this line
-use App\Models\CalendarEvent; // Add this line
-use App\Models\Project; // Add this line
-use App\Models\Activity; // Add this line
+use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ProjectManagementController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\TodoController;
+use App\Models\CalendarEvent;
+use App\Models\Task;
+use Illuminate\Support\Facades\Route;
+
+// Updated import
+// Add this line
+// Add this line
+// Add this line
+// Add this line
 
 // Welcome route - accessible to all (landing page)
 Route::get('/', function () {
@@ -77,7 +80,9 @@ Route::middleware('auth')->group(function () {
     // To-Do Routes
     Route::prefix('todos')->group(function () {
         Route::get('/', [TodoController::class, 'index'])->name('todos.index');
-        Route::post('/', [TodoController::class, 'store'])->name('todos.store');
+        Route::post('/', [TodoController::class, 'index'])->name('todos.store');
+        Route::patch('/{todo}', [TodoController::class, 'update'])->name('todos.update');
+        Route::delete('/{todo}', [TodoController::class, 'destroy'])->name('todos.destroy');
     });
 
     // Task Routes

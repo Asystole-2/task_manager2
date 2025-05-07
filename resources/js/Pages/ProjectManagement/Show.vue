@@ -102,48 +102,9 @@ const addTasks = () => {
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div class="mt-8">
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Activity</h3>
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-                            <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-                                <li v-for="activity in project.activities" :key="activity.id" class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                    <div class="flex items-start">
-                                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center">
-                                            <span class="text-red-600 dark:text-red-300">
-                                                {{ activity.user.initials }}
-                                            </span>
-                                        </div>
-                                        <div class="ml-4 flex-1">
-                                            <div class="flex items-center justify-between">
-                                                <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                                    {{ activity.user.name }}
-                                                </p>
-                                                <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                    {{ activity.time_ago }}
-                                                </p>
-                                            </div>
-                                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                                                {{ activity.description }}
-                                            </p>
-                                            <div v-if="activity.properties.changes" class="mt-2 text-xs text-gray-500 dark:text-gray-400">
-                                                <div v-for="(value, key) in activity.properties.changes" :key="key">
-                                                    <span class="font-medium">{{ key }}:</span>
-                                                    {{ value }}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li v-if="project.activities.length === 0" class="p-4 text-center text-gray-500 dark:text-gray-400">
-                                    No activity yet
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <!-- Tasks Section -->
-                    <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
                         <div class="p-6 border-b border-gray-200 dark:border-gray-700">
                             <div class="flex items-center justify-between">
                                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Project Tasks</h3>
