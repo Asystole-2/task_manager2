@@ -15,7 +15,7 @@ createInertiaApp({
         return pages[`./Pages/${name}.vue`];
     },
     setup({ el, App, props, plugin }) {
-        // Redirect to /dashboard if user is authenticated and trying to access welcome page
+        // Redirect to /dashboard if the user is authenticated and trying to access the welcome page
         if (props.initialPage.component === 'Welcome' && props.initialPage.props.auth.user) {
             window.location.href = '/dashboard';
             return;

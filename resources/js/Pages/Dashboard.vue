@@ -4,6 +4,8 @@ import { Head, Link } from '@inertiajs/vue3';
 import TaskList from '@/Components/TaskList.vue';
 import CalendarWidget from '@/Components/CalendarWidget.vue';
 import { CountUp } from 'vue3-countup';
+import ToDoList from '@/Components/ToDoList.vue';
+
 
 defineProps({
     tasks: {
@@ -118,6 +120,10 @@ defineProps({
                                 No tasks yet
                             </div>
                         </div>
+                    </div>
+                    <!-- To-Do List Section -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mt-8 p-6">
+                        <ToDoList />
                     </div>
 
                     <!-- Calendar Widget -->

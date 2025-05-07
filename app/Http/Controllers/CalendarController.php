@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\CalendarEvent;
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests; // Correct import
 use Inertia\Inertia;
-use Carbon\Carbon;
 
 class CalendarController extends Controller
 {
+    use AuthorizesRequests; // Use the trait for authorization
+
     public function index()
     {
         $events = CalendarEvent::where('user_id', auth()->id())
@@ -37,7 +39,7 @@ class CalendarController extends Controller
             'description' => 'nullable|string',
             'start' => 'required|date',
             'end' => 'nullable|date|after_or_equal:start',
-            'all_day' => 'required|boolean', // Changed to required
+            'all_day' => 'required|boolean',
             'color' => 'nullable|string|max:7'
         ]);
 
@@ -50,16 +52,17 @@ class CalendarController extends Controller
             'description' => $validated['description'] ?? null,
             'start' => $validated['start'],
             'end' => $validated['end'],
-            'all_day' => $allDay, // Use the converted boolean
+            'all_day' => $allDay,
             'color' => $validated['color'] ?? '#e63946',
         ]);
 
         return redirect()->route('calendar.index')
             ->with('success', 'Event created successfully!');
     }
+
     public function destroy(CalendarEvent $event)
     {
-        $this->authorize('delete', $event);
+        $this->authorize('delete-calendar-event', $event); // Ensure correct gate name
         $event->delete();
 
         return redirect()->back()
