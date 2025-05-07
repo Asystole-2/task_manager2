@@ -87,11 +87,12 @@ class TaskController extends Controller
 
     public function edit(Task $task)
     {
-        return Inertia::render('Tasks/Edit', [
-            'task' => $task
+        return inertia('Tasks/Edit', [
+            'task' => $task,
+            'priorities' => ['low', 'medium', 'high', 'critical'],
+            'statuses' => ['pending', 'in_progress', 'completed']
         ]);
     }
-
     public function update(Request $request, Task $task)
     {
         $validated = $request->validate([
@@ -104,11 +105,8 @@ class TaskController extends Controller
 
         $task->update($validated);
 
-        return redirect()
-            ->route('tasks.index')
-            ->with('success', 'Task updated successfully!');
+        return redirect()->route('tasks.index')->with('success', 'Task updated successfully!');
     }
-
     public function destroy(Task $task)
     {
         $task->delete();
