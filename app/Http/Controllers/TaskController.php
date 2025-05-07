@@ -26,6 +26,18 @@ class TaskController extends Controller
         ]);
     }
 
+    public function create(Request $request)
+    {
+        $projectId = $request->project_id;
+        $project = ProjectManagement::find($projectId);
+        $users = User::all();
+
+        return Inertia::render('Tasks/Create', [
+            'project' => $project,
+            'users' => $users,
+        ]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([

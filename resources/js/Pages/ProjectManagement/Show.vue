@@ -1,8 +1,10 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import TaskBoard from '@/Components/TaskBoard.vue';
+import { ref, onMounted } from 'vue';
 
-defineProps({
+const props = defineProps({
     project: {
         type: Object,
         required: true,
@@ -22,8 +24,33 @@ defineProps({
             start_date: null,
             end_date: null
         })
+    },
+    initialTasks: {
+        type: Object,
+        default: () => ({
+            standby: [],
+            ongoing: [],
+            done: []
+        })
     }
 });
+
+const showAddMemberModal = ref(false);
+const newMemberId = ref(null);
+const newMemberRole = ref('member');
+
+const addMember = () => {
+    router.post(route('ProjectManagement.add-member', props.project.id), {
+        user_id: newMemberId.value,
+        role: newMemberRole.value
+    }, {
+        onSuccess: () => {
+            showAddMemberModal.value = false;
+            newMemberId.value = null;
+            newMemberRole.value = 'member';
+        }
+    });
+};
 </script>
 
 <template>
@@ -52,6 +79,7 @@ defineProps({
 
         <div v-if="project" class="py-8">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Project Details Card -->
                 <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden mb-8">
                     <div class="p-6">
                         <div class="flex items-start justify-between">
@@ -96,138 +124,114 @@ defineProps({
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <!-- Recent Activity -->
-                    <div class="mt-8">
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Recent Activity</h3>
-                        <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-                            <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-                                <li v-for="activity in project.activities" :key="activity.id" class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                    <div class="flex items-start">
-                                        <div class="flex-shrink-0 h-10 w-10 rounded-full bg-red-100 dark:bg-red-900 flex items-center justify-center">
-            <span class="text-red-600 dark:text-red-300">
-                {{ activity.user?.initials || '??' }}
-            </span>
-                                        </div>
-                                        <div class="ml-4 flex-1">
-                                            <div class="flex items-center justify-between">
-                                                <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                                    {{ activity.user?.name || 'Unknown user' }}
-                                                </p>
-                                                <p class="text-sm text-gray-500 dark:text-gray-400">
-                                                    {{ activity.created_at ? new Date(activity.created_at).toLocaleString() : 'Recently' }}
-                                                </p>
-                                            </div>
-                                            <p class="text-sm text-gray-600 dark:text-gray-300 mt-1">
-                                                {{ activity.description || 'No description' }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                </li>
-                                <li v-if="!project.activities || project.activities.length === 0" class="p-4 text-center text-gray-500 dark:text-gray-400">
-                                    No activity yet
-                                </li>
-                            </ul>
+                <!-- Task Board Section -->
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Task Board</h3>
+                        <Link
+                            :href="route('tasks.create', { project_management_id: project.id })"
+                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-md text-sm"
+                        >
+                            + New Task
+                        </Link>
+                    </div>
+                    <TaskBoard :project="project" :initial-tasks="initialTasks" />
+                </div>
+
+                <!-- Team Members Section -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Team Members</h3>
+                            <button
+                                @click="showAddMemberModal = true"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md text-sm"
+                            >
+                                + Add Member
+                            </button>
                         </div>
                     </div>
-
-                    <!-- Tasks Section -->
-                    <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-                        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Project Tasks</h3>
-                                <Link
-                                    v-if="project"
-                                    :href="route('tasks.create', { project_id: project.id })"
-                                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors shadow-md text-sm"
-                                >
-                                    + New Task
-                                </Link>
-                            </div>
-                        </div>
-                        <div class="p-6">
-                            <div v-if="project.tasks && project.tasks.length > 0" class="space-y-4">
-                                <div v-for="task in project.tasks" :key="task.id" class="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-0 last:pb-0">
-                                    <h4 class="font-medium text-gray-900 dark:text-white">{{ task.title }}</h4>
-                                    <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ task.description }}</p>
-                                    <div class="mt-2 flex items-center justify-between">
-                                        <span class="text-xs text-gray-500 dark:text-gray-400">
-                                            Due: {{ task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No due date' }}
-                                        </span>
-                                        <span
-                                            class="px-2 py-1 text-xs rounded-full"
-                                            :class="{
-                                                'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200': task.status === 'completed',
-                                                'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200': task.status === 'in_progress',
-                                                'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200': task.status === 'pending'
-                                            }"
-                                        >
-                                            {{ task.status || 'pending' }}
-                                        </span>
-                                    </div>
+                    <div class="p-6">
+                        <ul class="space-y-4">
+                            <li class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                    <span class="text-gray-600 dark:text-gray-300">
+                                        {{ project.owner?.name?.split(' ').map(n => n[0]).join('') || 'O' }}
+                                    </span>
                                 </div>
-                            </div>
-                            <div v-else class="text-center text-gray-500 dark:text-gray-400 py-4">
-                                No tasks for this project yet
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Team Members Section -->
-                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-                        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-                            <div class="flex items-center justify-between">
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Team Members</h3>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ project.owner?.name || 'Owner' }} (Owner)
+                                    </p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                                        {{ project.owner?.email || 'No email' }}
+                                    </p>
+                                </div>
+                            </li>
+                            <li v-for="member in project.members" :key="member.id" class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+                                    <span class="text-gray-600 dark:text-gray-300">
+                                        {{ member.name?.split(' ').map(n => n[0]).join('') || 'M' }}
+                                    </span>
+                                </div>
+                                <div class="ml-4">
+                                    <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                        {{ member.name }} ({{ member.pivot?.role || 'member' }})
+                                    </p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                                        {{ member.email }}
+                                    </p>
+                                </div>
                                 <button
-                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md text-sm"
+                                    @click="router.delete(route('ProjectManagement.remove-member', [project.id, member.id]))"
+                                    class="ml-auto text-red-600 hover:text-red-500 dark:text-red-400 dark:hover:text-red-300 text-sm"
                                 >
-                                    + Add Member
+                                    Remove
                                 </button>
-                            </div>
-                        </div>
-                        <div class="p-6">
-                            <ul class="space-y-4">
-                                <li class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                        <span class="text-gray-600 dark:text-gray-300">
-                                            {{ project.owner?.name?.split(' ').map(n => n[0]).join('') || 'O' }}
-                                        </span>
-                                    </div>
-                                    <div class="ml-4">
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ project.owner?.name || 'Owner' }} (Owner)
-                                        </p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                                            {{ project.owner?.email || 'No email' }}
-                                        </p>
-                                    </div>
-                                </li>
-                                <li v-for="member in project.members" :key="member.id" class="flex items-center">
-                                    <div class="flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
-                                        <span class="text-gray-600 dark:text-gray-300">
-                                            {{ member.name?.split(' ').map(n => n[0]).join('') || 'M' }}
-                                        </span>
-                                    </div>
-                                    <div class="ml-4">
-                                        <p class="text-sm font-medium text-gray-900 dark:text-white">
-                                            {{ member.name }} ({{ member.pivot?.role || 'member' }})
-                                        </p>
-                                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                                            {{ member.email }}
-                                        </p>
-                                    </div>
-                                </li>
-                                <li v-if="!project.members || project.members.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-4">
-                                    No additional team members
-                                </li>
-                            </ul>
-                        </div>
+                            </li>
+                            <li v-if="!project.members || project.members.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-4">
+                                No additional team members
+                            </li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
         <div v-else class="py-8 text-center">
             Loading project details...
+        </div>
+
+        <!-- Add Member Modal -->
+        <div v-if="showAddMemberModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md">
+                <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Add Team Member</h3>
+
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Member</label>
+                        <select v-model="newMemberId" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <option value="" disabled selected>Select a member</option>
+                            <option v-for="user in $page.props.availableUsers" :key="user.id" :value="user.id">
+                                {{ user.name }} ({{ user.email }})
+                            </option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Role</label>
+                        <input v-model="newMemberRole" type="text" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Member">
+                    </div>
+
+                    <div class="flex justify-end space-x-3 pt-4">
+                        <button @click="showAddMemberModal = false" type="button" class="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors shadow-md">
+                            Cancel
+                        </button>
+                        <button @click="addMember" type="button" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-md">
+                            Add Member
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </AuthenticatedLayout>
 </template>

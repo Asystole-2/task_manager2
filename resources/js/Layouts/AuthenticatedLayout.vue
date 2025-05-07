@@ -1,14 +1,16 @@
 <script setup>
 import { ref } from 'vue';
-import { Link } from '@inertiajs/vue3'; // Make sure this is imported
+import { Link } from '@inertiajs/vue3';
 import SidebarNavigation from '@/Components/SidebarNavigation.vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import QuickAddTaskModal from '@/Components/QuickAddTaskModal.vue';
 
 const showingNavigationDropdown = ref(false);
+const showQuickAdd = ref(false);
 </script>
 
 <template>
