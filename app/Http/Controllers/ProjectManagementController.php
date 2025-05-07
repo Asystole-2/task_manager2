@@ -38,8 +38,18 @@ class ProjectManagementController extends Controller
 
     public function show(ProjectManagement $projectManagement)
     {
-        $projectManagement->load(['owner', 'tasks', 'members']);
-        return inertia('ProjectManagement/Show', compact('projectManagement'));
+        $projectManagement->load(['tasks', 'owner', 'members', 'activities']);
+
+        $availableTasks = Task::where('user_id', auth()->id())
+            ->whereDoesntHave('project', function($query) use ($projectManagement) {
+                $query->where('project_management.id', $projectManagement->id);
+            })
+            ->get();
+
+        return inertia('ProjectManagement/Show', [
+            'project' => $projectManagement,
+            'availableTasks' => $availableTasks
+        ]);
     }
 
     // Add other methods (edit, update, destroy) as needed
@@ -63,6 +73,12 @@ class ProjectManagementController extends Controller
 
         return redirect()->route('ProjectManagement.show', $projectManagement)
             ->with('success', 'Project updated successfully!');
+    }
+
+    // In app/Models/ProjectManagement.php
+    public function tasks()
+    {
+        return $this->hasMany(Task::class);
     }
 
 }

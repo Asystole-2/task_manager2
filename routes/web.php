@@ -60,6 +60,8 @@ Route::middleware('auth')->group(function () {
         // Add other routes as needed
         Route::get('/{projectManagement}/edit', [ProjectManagementController::class, 'edit'])->name('ProjectManagement.edit');
         Route::put('/{projectManagement}', [ProjectManagementController::class, 'update'])->name('ProjectManagement.update');
+        Route::post('/project-management/{projectManagement}/tasks', [ProjectManagementController::class, 'addTasks'])
+            ->name('ProjectManagement.tasks.add');
     });
     // Activity Route
     Route::get('/activity', [ActivityController::class, 'index'])->name('activities.index');

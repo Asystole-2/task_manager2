@@ -34,4 +34,17 @@ class ProjectManagement extends Model
             ->withPivot('role')
             ->withTimestamps();
     }
+    public function addTasks(Request $request, ProjectManagement $projectManagement)
+    {
+        $validated = $request->validate([
+            'task_ids' => 'required|array',
+            'task_ids.*' => 'exists:tasks,id,user_id,'.auth()->id()
+        ]);
+
+        // For one-to-many relationship
+        Task::whereIn('id', $validated['task_ids'])
+            ->update(['project_id' => $projectManagement->id]);
+
+        return back()->with('success', 'Tasks added to project successfully!');
+    }
 }

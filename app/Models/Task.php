@@ -33,4 +33,10 @@ class Task extends Model
     {
         return $this->belongsTo(User::class, 'assignee_id');
     }
+    // In app/Models/Task.php
+    public function project()
+    {
+        return $this->belongsTo(ProjectManagement::class, 'project_id');
+    }
+
 }
