@@ -7,7 +7,11 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ProjectManagementController;
 use App\Http\Controllers\ActivityController;
-
+use App\Models\Task; // Add this line
+use App\Models\CalendarEvent; // Add this line
+use App\Models\Project; // Add this line
+use App\Models\Activity; // Add this line
+// Welcome route - accessible to all (landing page)
 Route::get('/', function () {
     return inertia('Welcome', [
         'canLogin' => Route::has('login'),
@@ -44,32 +48,56 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ]);
     })->name('dashboard');
 
+    // Project Routes
+    Route::prefix('ProjectManagement')->group(function () {
+        Route::get('/', [ProjectManagementController::class, 'index'])->name('ProjectManagement.index');
+        Route::get('/create', [ProjectManagementController::class, 'create'])->name('ProjectManagement.create');
+        Route::post('/', [ProjectManagementController::class, 'store'])->name('ProjectManagement.store');
+        Route::get('/{projectManagement}', [ProjectManagementController::class, 'show'])->name('ProjectManagement.show');
+        // Add other routes as needed
+        Route::get('/projects/{projectManagement}/edit', [ProjectManagementController::class, 'edit'])->name('ProjectManagement.edit');
+        Route::put('/{projectManagement}', [ProjectManagementController::class, 'update'])->name('ProjectManagement.update');
+        Route::post('/project-management/{projectManagement}/tasks', [ProjectManagementController::class, 'addTasks'])
+            ->name('ProjectManagement.tasks.add');
+    });
+    // Activity Route
+    Route::get('/activity', [ActivityController::class, 'index'])->name('activities.index');
     // Project Management Routes
-    Route::resource('ProjectManagement', ProjectManagementController::class)
-        ->parameters(['ProjectManagement' => 'projectManagement'])
-        ->names([
-            'index' => 'ProjectManagement.index',
-            'create' => 'ProjectManagement.create',
-            'store' => 'ProjectManagement.store',
-            'show' => 'ProjectManagement.show',
-            'edit' => 'ProjectManagement.edit',
-            'update' => 'ProjectManagement.update',
-            'destroy' => 'ProjectManagement.destroy'
-        ]);
+//    Route::resource('ProjectManagement', ProjectManagementController::class)
+//        ->parameters(['ProjectManagement' => 'projectManagement'])
+//        ->names([
+//            'index' => 'ProjectManagement.index',
+//            'create' => 'ProjectManagement.create',
+//            'store' => 'ProjectManagement.store',
+//            'show' => 'ProjectManagement.show',
+//            'edit' => 'ProjectManagement.edit',
+//            'update' => 'ProjectManagement.update',
+//            'destroy' => 'ProjectManagement.destroy'
+//        ]);
 
     // Project Member Routes
-    Route::post('/ProjectManagement/{projectManagement}/add-member', [ProjectManagementController::class, 'addMember'])
-        ->name('ProjectManagement.add-member');
-    Route::delete('/ProjectManagement/{projectManagement}/remove-member/{user}', [ProjectManagementController::class, 'removeMember'])
-        ->name('ProjectManagement.remove-member');
-    Route::get('/ProjectManagement/{projectManagement}/available-members', [ProjectManagementController::class, 'availableMembers'])
-        ->name('ProjectManagement.available-members');
+//    Route::post('/ProjectManagement/{projectManagement}/add-member', [ProjectManagementController::class, 'addMember'])
+//        ->name('ProjectManagement.add-member');
+//    Route::delete('/ProjectManagement/{projectManagement}/remove-member/{user}', [ProjectManagementController::class, 'removeMember'])
+//        ->name('ProjectManagement.remove-member');
+//    Route::get('/ProjectManagement/{projectManagement}/available-members', [ProjectManagementController::class, 'availableMembers'])
+//        ->name('ProjectManagement.available-members');
+
+
+    // Calendar Routes
+    Route::prefix('calendar')->group(function () {
+        Route::get('/calendar', [CalendarController::class, 'index'])->name('calendar.index');
+        Route::post('/calendar', [CalendarController::class, 'store'])->name('calendar.store');
+        Route::delete('/calendar/{event}', [CalendarController::class, 'destroy'])->name('calendar.destroy');
+    });
 
     // Task Routes
     Route::prefix('tasks')->group(function () {
         Route::get('/', [TaskController::class, 'index'])->name('tasks.index');
         Route::get('/create', [TaskController::class, 'create'])->name('tasks.create');
         Route::post('/', [TaskController::class, 'store'])->name('tasks.store');
+        Route::patch('/{task}', [TaskController::class, 'update'])->name('tasks.update');
+        Route::get('/tasks/{task}/edit', [TaskController::class, 'edit'])->name('tasks.edit');
         Route::put('/{task}', [TaskController::class, 'update'])->name('tasks.update');
         Route::put('/update-status', [TaskController::class, 'updateStatus'])->name('tasks.update-status');
         Route::delete('/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');

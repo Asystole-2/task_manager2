@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,7 +16,8 @@ class ProjectManagement extends Model
         'owner_id',
         'start_date',
         'end_date',
-        'is_active'
+        'is_active',
+        'owner_id'
     ];
 
     // Relationship with owner (User)
@@ -27,7 +29,7 @@ class ProjectManagement extends Model
     // Relationship with tasks
     public function tasks(): HasMany
     {
-        return $this->hasMany(Task::class);
+        return $this->hasMany(Task::class, 'project_id');
     }
 
     // Relationship with team members (Users)
@@ -42,5 +44,23 @@ class ProjectManagement extends Model
     public function activities(): HasMany
     {
         return $this->hasMany(Activity::class);
+    }
+    public function addTasks(Request $request, ProjectManagement $projectManagement)
+    {
+        $validated = $request->validate([
+            'task_ids' => 'required|array',
+            'task_ids.*' => 'exists:tasks,id,user_id,'.auth()->id()
+        ]);
+
+        // For one-to-many relationship
+        Task::whereIn('id', $validated['task_ids'])
+            ->update(['project_id' => $projectManagement->id]);
+
+        return back()->with('success', 'Tasks added to project successfully!');
+    }
+
+    public function activities()
+    {
+        return $this->hasMany(Activity::class); // Replace Activity::class with the correct model
     }
 }

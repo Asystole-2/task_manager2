@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\ProjectManagement;
 use Illuminate\Http\Request;
-
+use App\Models\Task;
 class ProjectManagementController extends Controller
 {
     public function index()
     {
         $projects = ProjectManagement::where('owner_id', auth()->id())->get();
-        return inertia('ProjectManagement/Index', ['projects' => $projects]);
+        return inertia('ProjectManagement/Index', compact('projects'));
     }
 
     public function create()
@@ -38,25 +38,25 @@ class ProjectManagementController extends Controller
 
     public function show(ProjectManagement $projectManagement)
     {
-        $projectManagement->load([
-            'owner',
-            'tasks',
-            'members',
-            'activities' => function($query) {
-                $query->latest()->limit(10);
-            },
-            'activities.user'
-        ]);
+        $projectManagement->load(['tasks', 'owner', 'members', 'activities']);
+
+        $availableTasks = Task::where('creator_id', auth()->id())
+            ->whereDoesntHave('project', function($query) use ($projectManagement) {
+                $query->where('project_id', $projectManagement->id);
+            })
+            ->get();
 
         return inertia('ProjectManagement/Show', [
-            'project' => $projectManagement
+            'project' => $projectManagement,
+            'availableTasks' => $availableTasks
         ]);
     }
 
+    // Add other methods (edit, update, destroy) as needed
+
     public function edit(ProjectManagement $projectManagement)
     {
-        $projectManagement->load(['owner', 'tasks', 'members']);
-        return inertia('ProjectManagement/Edit', ['project' => $projectManagement]);
+        return inertia('ProjectManagement/Edit', compact('projectManagement'));
     }
 
     public function update(Request $request, ProjectManagement $projectManagement)
@@ -75,45 +75,28 @@ class ProjectManagementController extends Controller
             ->with('success', 'Project updated successfully!');
     }
 
-    public function addMember(Request $request, ProjectManagement $projectManagement)
+    // In app/Models/ProjectManagement.php
+    public function tasks()
     {
-        $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'role' => 'nullable|string|max:255',
+        return $this->hasMany(Task::class);
+    }
+
+
+
+    public function addTasks(Request $request, ProjectManagement $projectManagement)
+    {
+        $validated = $request->validate([
+            'task_ids' => 'required|array',
+            'task_ids.*' => 'exists:tasks,id', // Validate that each ID exists in the tasks table
         ]);
 
-        // Prevent duplicate members
-        if ($projectManagement->members()->where('user_id', $request->user_id)->exists()) {
-            return redirect()->back()->with('error', 'User is already a member of this project');
+        // Logic to associate tasks with the project
+        foreach ($validated['task_ids'] as $taskId) {
+            $task = Task::find($taskId);
+            $task->project_id = $projectManagement->id; // Assuming you have a project_id column in the tasks table
+            $task->save();
         }
 
-        $projectManagement->members()->attach($request->user_id, [
-            'role' => $request->role ?? 'member'
-        ]);
-
-        return redirect()->back()->with('success', 'Member added successfully!');
-    }
-
-    public function removeMember(ProjectManagement $projectManagement, User $user)
-    {
-        $projectManagement->members()->detach($user->id);
-        return redirect()->back()->with('success', 'Member removed successfully!');
-    }
-
-    public function availableMembers(ProjectManagement $projectManagement)
-    {
-        $currentMemberIds = $projectManagement->members()->pluck('users.id');
-        $availableUsers = User::whereNotIn('id', $currentMemberIds)
-            ->where('id', '!=', $projectManagement->owner_id)
-            ->get(['id', 'name', 'email']);
-
-        return response()->json($availableUsers);
-    }
-
-    public function destroy(ProjectManagement $projectManagement)
-    {
-        $projectManagement->delete();
-        return redirect()->route('ProjectManagement.index')
-            ->with('success', 'Project deleted successfully!');
+        return back()->with('success', 'Tasks added to project successfully!');
     }
 }

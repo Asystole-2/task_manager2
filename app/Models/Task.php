@@ -10,6 +10,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Task extends Model
 {
     use HasFactory;
+    public function project()
+    {
+        return $this->belongsTo(ProjectManagement::class, 'project_id');
+    }
 
     protected $fillable = [
         'title',
@@ -20,6 +24,7 @@ class Task extends Model
         'project_management_id',
         'creator_id',
         'assignee_id',
+        'status',
     ];
 
     protected $casts = [
