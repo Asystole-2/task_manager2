@@ -25,7 +25,7 @@ class ProjectManagement extends Model
 
     public function tasks()
     {
-        return $this->hasMany(Task::class);
+        return $this->hasMany(Task::class, 'project_id');
     }
 
     public function members()
@@ -46,5 +46,10 @@ class ProjectManagement extends Model
             ->update(['project_id' => $projectManagement->id]);
 
         return back()->with('success', 'Tasks added to project successfully!');
+    }
+
+    public function activities()
+    {
+        return $this->hasMany(Activity::class); // Replace Activity::class with the correct model
     }
 }

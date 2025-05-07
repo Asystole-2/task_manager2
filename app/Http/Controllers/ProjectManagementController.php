@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ProjectManagement;
 use Illuminate\Http\Request;
-
+use App\Models\Task;
 class ProjectManagementController extends Controller
 {
     public function index()
@@ -40,12 +40,11 @@ class ProjectManagementController extends Controller
     {
         $projectManagement->load(['tasks', 'owner', 'members', 'activities']);
 
-        $availableTasks = Task::where('user_id', auth()->id())
-            ->whereDoesntHave('project', function($query) use ($projectManagement) {
-                $query->where('project_management.id', $projectManagement->id);
-            })
+        $availableTasks = Task::where('creator_id', auth()->id()) // Use creator_id
+        ->whereDoesntHave('project', function($query) use ($projectManagement) {
+            $query->where('project_id', $projectManagement->id);
+        })
             ->get();
-
         return inertia('ProjectManagement/Show', [
             'project' => $projectManagement,
             'availableTasks' => $availableTasks
