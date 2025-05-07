@@ -34,7 +34,7 @@ class TaskController extends Controller
 
         return Inertia::render('Tasks/Create', [
             'project' => $project,
-            'users' => $users,
+            'availableMembers' => $users,
         ]);
     }
 
@@ -43,10 +43,12 @@ class TaskController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'priority' => 'required|in:low,medium,high',
+            'priority' => 'required|in:low,medium,high,critical',
             'due_date' => 'nullable|date|after_or_equal:today',
             'project_management_id' => 'required|exists:project_management,id',
             'assignee_id' => 'nullable|exists:users,id',
+            'member_ids' => 'sometimes|array',
+            'member_ids.*' => 'exists:users,id',
         ]);
 
         $task = Task::create([
@@ -68,7 +70,7 @@ class TaskController extends Controller
             'status' => 'sometimes|in:standby,ongoing,done',
             'title' => 'sometimes|string|max:255',
             'description' => 'sometimes|nullable|string',
-            'priority' => 'sometimes|in:low,medium,high',
+            'priority' => 'sometimes|in:low,medium,high,critical',
             'due_date' => 'sometimes|nullable|date',
             'assignee_id' => 'sometimes|nullable|exists:users,id',
             'member_ids' => 'sometimes|array',

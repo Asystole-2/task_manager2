@@ -35,7 +35,6 @@ const showQuickAdd = ref(false);
                             <!-- Navigation Links -->
                             <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">Dashboard</NavLink>
-
                             </div>
                         </div>
                         <NavLink :href="route('activities.index')" :active="route().current('activities.index')">
@@ -131,5 +130,4 @@ const showQuickAdd = ref(false);
         </div>
     </div>
     <QuickAddTaskModal :show="showQuickAdd" @close="showQuickAdd = false" />
-
 </template>

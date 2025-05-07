@@ -1,8 +1,8 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
-import { router } from '@inertiajs/vue3';
+import { router, Link } from '@inertiajs/vue3'; // Fixed: Added Link import
 import { usePage } from '@inertiajs/vue3';
-import draggable from 'vuedraggable';
+import Draggable from 'vuedraggable'; // Fixed: Capitalized to match usage in template
 
 const props = defineProps({
     project: {
@@ -70,7 +70,7 @@ const formatTimeRemaining = (task) => {
             <div class="p-4 rounded-lg" :class="statusClasses[status]">
                 <h3 class="text-lg font-semibold mb-4">{{ statusTitles[status] }}</h3>
 
-                <draggable
+                <Draggable
                     :list="tasks[status]"
                     group="tasks"
                     item-key="id"
@@ -119,7 +119,7 @@ const formatTimeRemaining = (task) => {
                             </div>
                         </div>
                     </template>
-                </draggable>
+                </Draggable>
             </div>
         </div>
     </div>

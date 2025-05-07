@@ -9,7 +9,6 @@ import TextArea from '@/Components/TextArea.vue';
 import DateInput from '@/Components/DateInput.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 import Multiselect from '@vueform/multiselect';
-import { ref } from 'vue';
 
 const props = defineProps({
     project: {
