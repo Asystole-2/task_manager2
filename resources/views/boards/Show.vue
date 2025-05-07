@@ -35,7 +35,9 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
-import KanbanBoard from '@/components/KanbanBoard.vue';
+import KanbanBoard from '@/Components/KanbanBoard.vue';
+// import KanbanBoard from '@/components/KanbanBoard.vue';
+
 
 const route = useRoute();
 const router = useRouter();
