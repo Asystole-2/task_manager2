@@ -5,12 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class TaskController extends Controller
 {
-    use AuthorizesRequests;
-
     public function index(Request $request)
     {
         $query = Task::where('creator_id', auth()->id())
@@ -21,16 +18,9 @@ class TaskController extends Controller
         $sortBy = $request->input('sort_by', 'due_date');
         $sortDirection = $request->input('sort_direction', 'asc');
 
-        // Special sorting for priority (custom order)
         if ($sortBy === 'priority') {
-            $priorityOrder = [
-                'high' => 1,
-                'medium' => 2,
-                'low' => 3
-            ];
-            $query->orderByRaw(
-                "FIELD(priority, 'high', 'medium', 'low') {$sortDirection}"
-            );
+            $priorityOrder = ['high' => 1, 'medium' => 2, 'low' => 3];
+            $query->orderByRaw("FIELD(priority, 'high', 'medium', 'low') {$sortDirection}");
         } else if (in_array($sortBy, ['title', 'due_date', 'status'])) {
             $query->orderBy($sortBy, $sortDirection);
         }
@@ -39,9 +29,7 @@ class TaskController extends Controller
         $pendingTasksCount = Task::where(function($query) {
             $query->where('creator_id', auth()->id())
                 ->orWhere('assignee_id', auth()->id());
-        })
-            ->where('status', 'pending')
-            ->count();
+        })->where('status', 'pending')->count();
 
         return Inertia::render('Tasks/Index', [
             'tasks' => $tasks->map(function ($task) {
@@ -90,26 +78,42 @@ class TaskController extends Controller
             ->with('success', 'Task created successfully!');
     }
 
-    public function destroy(Task $task)
+    public function show(Task $task)
     {
-        $this->authorize('delete', $task);
-        $task->delete();
-        return redirect()
-            ->back()
-            ->with('success', 'Task deleted successfully!');
+        return Inertia::render('Tasks/Show', [
+            'task' => $task->load(['creator', 'assignee'])
+        ]);
     }
 
-    // Add to TaskController.php
+    public function edit(Task $task)
+    {
+        return Inertia::render('Tasks/Edit', [
+            'task' => $task
+        ]);
+    }
+
     public function update(Request $request, Task $task)
     {
-        $this->authorize('update', $task);
-
         $validated = $request->validate([
-            'status' => 'required|in:pending,in_progress,completed'
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'priority' => 'required|in:low,medium,high,critical',
+            'status' => 'required|in:pending,in_progress,completed',
+            'due_date' => 'nullable|date',
         ]);
 
         $task->update($validated);
 
-        return redirect()->back()->with('success', 'Task status updated!');
+        return redirect()
+            ->route('tasks.index')
+            ->with('success', 'Task updated successfully!');
+    }
+
+    public function destroy(Task $task)
+    {
+        $task->delete();
+        return redirect()
+            ->back()
+            ->with('success', 'Task deleted successfully!');
     }
 }

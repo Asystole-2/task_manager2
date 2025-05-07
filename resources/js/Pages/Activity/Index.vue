@@ -6,12 +6,16 @@ defineProps({
     activities: Array,
     projects: Array,
     tasks: Array,
+    events: Array,
 });
 
 const deleteItem = (type, id) => {
     if (confirm('Are you sure you want to delete this item?')) {
         router.delete(route(`${type}.destroy`, id), {
             preserveScroll: true,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
             onSuccess: () => {
                 // Optional: Show a success message
             },
@@ -194,6 +198,55 @@ const deleteItem = (type, id) => {
                         </div>
                         <div v-else class="text-center text-gray-500 dark:text-gray-400 py-4">
                             No tasks yet
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Calendar Events Section -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                    <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center justify-between">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">My Calendar Events</h3>
+                            <Link
+                                :href="route('calendar.index')"
+                                class="text-sm font-medium text-purple-600 hover:text-purple-500 dark:text-purple-400 dark:hover:text-purple-300"
+                            >
+                                View All
+                            </Link>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div v-if="events.length > 0" class="space-y-4">
+                            <div
+                                v-for="event in events"
+                                :key="`event-${event.id}`"
+                                class="border-b border-gray-200 dark:border-gray-700 pb-4 last:border-0 last:pb-0"
+                            >
+                                <div class="flex items-start justify-between">
+                                    <div>
+                                        <h4 class="font-medium text-gray-900 dark:text-white">{{ event.title }}</h4>
+                                        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ event.description }}</p>
+                                        <div class="mt-2 flex items-center justify-between">
+                                            <span class="text-sm text-gray-500 dark:text-gray-400">
+                                                {{ new Date(event.start).toLocaleString() }} -
+                                                {{ new Date(event.end).toLocaleString() }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <button
+                                        @click="deleteItem('calendar', event.id)"
+                                        class="ml-4 text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
+                                        title="Delete Event"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div v-else class="text-center text-gray-500 dark:text-gray-400 py-4">
+                            No events yet
                         </div>
                     </div>
                 </div>

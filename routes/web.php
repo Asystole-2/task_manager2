@@ -28,10 +28,11 @@ Route::middleware('auth')->group(function () {
     // Dashboard route
 
     // Add these routes inside the authenticated group
+    // Add these routes inside the authenticated group
     Route::delete('/activity/{activity}', [ActivityController::class, 'destroyActivity'])->name('activities.destroy');
-    Route::delete('/projects/{projectManagement}', [ActivityController::class, 'destroyProject'])->name('projects.destroy');
+    Route::delete('/projects/{project}', [ActivityController::class, 'destroyProject'])->name('projects.destroy');
     Route::delete('/tasks/{task}', [ActivityController::class, 'destroyTask'])->name('tasks.destroy');
-
+    Route::delete('/calendar/{event}', [ActivityController::class, 'destroyEvent'])->name('calendar.destroy');
     Route::get('/dashboard', function () {
         $userId = auth()->id();
 

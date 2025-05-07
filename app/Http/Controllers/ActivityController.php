@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Activity;
 use App\Models\ProjectManagement;
 use App\Models\Task;
+use App\Models\CalendarEvent;
 use Illuminate\Http\Request;
 
 class ActivityController extends Controller
@@ -22,11 +23,13 @@ class ActivityController extends Controller
         $tasks = Task::where('creator_id', $userId)
             ->orWhere('assignee_id', $userId)
             ->get();
+        $events = CalendarEvent::where('user_id', $userId)->get();
 
         return inertia('Activity/Index', [
             'activities' => $activities,
             'projects' => $projects,
-            'tasks' => $tasks
+            'tasks' => $tasks,
+            'events' => $events
         ]);
     }
 
@@ -36,9 +39,9 @@ class ActivityController extends Controller
         return redirect()->back()->with('success', 'Activity deleted successfully');
     }
 
-    public function destroyProject(ProjectManagement $projectManagement)
+    public function destroyProject(ProjectManagement $project)
     {
-        $projectManagement->delete();
+        $project->delete();
         return redirect()->back()->with('success', 'Project deleted successfully');
     }
 
@@ -46,5 +49,11 @@ class ActivityController extends Controller
     {
         $task->delete();
         return redirect()->back()->with('success', 'Task deleted successfully');
+    }
+
+    public function destroyEvent(CalendarEvent $event)
+    {
+        $event->delete();
+        return redirect()->back()->with('success', 'Event deleted successfully');
     }
 }
