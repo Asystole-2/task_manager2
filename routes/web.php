@@ -26,6 +26,12 @@ Route::get('/guest-view', function () {
 // Authenticated routes
 Route::middleware('auth')->group(function () {
     // Dashboard route
+
+    // Add these routes inside the authenticated group
+    Route::delete('/activity/{activity}', [ActivityController::class, 'destroyActivity'])->name('activities.destroy');
+    Route::delete('/projects/{projectManagement}', [ActivityController::class, 'destroyProject'])->name('projects.destroy');
+    Route::delete('/tasks/{task}', [ActivityController::class, 'destroyTask'])->name('tasks.destroy');
+
     Route::get('/dashboard', function () {
         $userId = auth()->id();
 

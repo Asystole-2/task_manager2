@@ -6,7 +6,6 @@ use App\Models\Activity;
 use App\Models\ProjectManagement;
 use App\Models\Task;
 use Illuminate\Http\Request;
-use Inertia\Inertia;
 
 class ActivityController extends Controller
 {
@@ -29,5 +28,23 @@ class ActivityController extends Controller
             'projects' => $projects,
             'tasks' => $tasks
         ]);
+    }
+
+    public function destroyActivity(Activity $activity)
+    {
+        $activity->delete();
+        return redirect()->back()->with('success', 'Activity deleted successfully');
+    }
+
+    public function destroyProject(ProjectManagement $projectManagement)
+    {
+        $projectManagement->delete();
+        return redirect()->back()->with('success', 'Project deleted successfully');
+    }
+
+    public function destroyTask(Task $task)
+    {
+        $task->delete();
+        return redirect()->back()->with('success', 'Task deleted successfully');
     }
 }
